@@ -16,8 +16,6 @@
 
 $(call inherit-product-if-exists, vendor/letv/le_x2/le_x2-vendor.mk)
 
-$(call inherit-product-if-exists, vendor/adds/copyfiles.mk)
-
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 

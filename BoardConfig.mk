@@ -115,8 +115,8 @@ USE_DEVICE_SPECIFIC_CAMERA := true
 BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 
-# CM Hardware
-BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/cmhw
+# MK Hardware
+#BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/mkhw
 #TARGET_TAP_TO_WAKE_NODE := "/sys/devices/soc/75ba000.i2c/i2c-12/12-004b/input/input2/wake_gesture"
 
 # CNE and DPM
