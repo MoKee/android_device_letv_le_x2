@@ -1,0 +1,56 @@
+# Generally based on untrusted_app.te
+
+type remotecontrol_app, domain;
+app_domain(remotecontrol_app)
+net_domain(remotecontrol_app)
+bluetooth_domain(remotecontrol_app)
+
+# Some apps ship with shared libraries and binaries that they write out
+# to their sandbox directory and then execute.
+allow remotecontrol_app app_data_file:file { rx_file_perms execmod };
+
+# Used by Finsky / Android "Verify Apps" functionality when
+# running "adb install foo.apk".
+# TODO: Long term, we don't want apps probing into shell data files.
+# Figure out a way to remove these rules.
+allow remotecontrol_app shell_data_file:file r_file_perms;
+allow remotecontrol_app shell_data_file:dir r_dir_perms;
+
+# Read and write system app data files passed over Binder.
+# Motivating case was /data/data/com.android.settings/cache/*.jpg for
+# cropping or taking user photos.
+allow remotecontrol_app system_app_data_file:file { read write getattr };
+
+#
+# Rules migrated from old app domains coalesced into remotecontrol_app.
+# This includes what used to be media_app, shared_app, and release_app.
+#
+
+# Access to /data/media.
+allow remotecontrol_app media_rw_data_file:dir create_dir_perms;
+allow remotecontrol_app media_rw_data_file:file create_file_perms;
+
+# Traverse into /mnt/media_rw for bypassing FUSE daemon
+# TODO: narrow this to just MediaProvider
+allow remotecontrol_app mnt_media_rw_file:dir search;
+
+# Write to /cache.
+allow remotecontrol_app cache_file:dir create_dir_perms;
+allow remotecontrol_app cache_file:file create_file_perms;
+
+allow remotecontrol_app battery_service:service_manager find;
+allow remotecontrol_app drmserver_service:service_manager find;
+allow remotecontrol_app healthd_service:service_manager find;
+allow remotecontrol_app mediaserver_service:service_manager find;
+allow remotecontrol_app nfc_service:service_manager find;
+allow remotecontrol_app radio_service:service_manager find;
+allow remotecontrol_app surfaceflinger_service:service_manager find;
+allow remotecontrol_app app_api_service:service_manager find;
+allow remotecontrol_app ifaadaemon_service:service_manager find;
+
+# TODO: remove this once priv-apps are no longer running in remotecontrol_app
+allow remotecontrol_app system_api_service:service_manager find;
+
+# Programs routinely attempt to scan through /system, looking
+# for files. Suppress the denials when they occur.
+dontaudit remotecontrol_app exec_type:file getattr;
