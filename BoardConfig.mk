@@ -24,7 +24,7 @@
 # Boldly go.
 USE_CLANG_PLATFORM_BUILD := true
 
-TARGET_OTA_ASSERT_DEVICE := le_x2,LeMax2_CN,
+TARGET_OTA_ASSERT_DEVICE := le_x2,LeMax2_CN,Le_x820,Le_X820
 
 DEVICE_PATH := device/letv/le_x2
 
