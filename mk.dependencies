@@ -1,5 +1,9 @@
 [
  {
+   "repository": "android_vendor_letv_le_x2",
+   "target_path": "vendor/letv/le_x2"
+ },
+ {
    "repository": "android_device_qcom_common",
    "target_path": "device/qcom/common"
  },
