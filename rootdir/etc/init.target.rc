@@ -167,6 +167,7 @@ service qcamerasvr /system/bin/mm-qcamera-daemon
     class late_start
     user camera
     group camera system inet input graphics
+    writepid /dev/cpuset/system-background/tasks
 
 #fingerprint service
 service fingerprintd /system/bin/fingerprintd
@@ -192,13 +193,13 @@ service qvop-daemon /system/bin/qvop-daemon
 
 #Start up peripheral manager
 service per_mgr /system/bin/pm-service
-    class core
+    class late_start
     user system
     group system net_raw
     ioprio rt 4
 
 service per_proxy /system/bin/pm-proxy
-    class core
+    class late_start
     user system
     group system
     disabled
@@ -217,27 +218,6 @@ service mdm_helper /system/bin/mdm_helper
      class core
      group root system
      disabled
-## Allow usb charging to be disabled peristently
-#on property:persist.usb.chgdisabled=1
-#    write /sys/class/power_supply/battery/charging_enabled 0
-#
-#on property:persist.usb.chgdisabled=0
-#    write /sys/class/power_supply/battery/charging_enabled 1
-#
-#service qrngd /system/bin/qrngd -f
-#   class main
-#   user root
-#   group root
-#
-#service qrngp /system/bin/qrngp
-#    class main
-#    user root
-#    group root
-#    oneshot
-#    disabled
-#
-#on property:sys.boot_completed=1
-#    start qrngp
 
 service qseecomd /system/bin/qseecomd
    class core
@@ -247,7 +227,9 @@ service qseecomd /system/bin/qseecomd
 service perfd /system/vendor/bin/perfd
    class main
    user root
+   socket perfd seqpacket 0666 root system
    disabled
+   writepid /dev/cpuset/system-background/tasks
 
 #service seempd /system/bin/seempd
 #   class late_start
@@ -260,15 +242,6 @@ service secotad /system/bin/secotad
    user system
    group system
 
-#service mpdecision /system/bin/mpdecision --avg_comp
-#   user root
-#   disabled
-#
-#service qosmgrd /system/bin/qosmgr /system/etc/qosmgr_rules.xml
-#   user system
-#   group system
-#   disabled
-#
 service thermal-engine /system/vendor/bin/thermal-engine
    class main
    user root
@@ -277,14 +250,6 @@ service thermal-engine /system/vendor/bin/thermal-engine
    socket thermal-recv-passive-client stream 0666 system system
    group root
 
-#service security-check1 /sbin/security_boot_check system
-#    class core
-#    oneshot
-#
-#service security-check2 /sbin/security_boot_check recovery
-#    class core
-#    oneshot
-#
 service time_daemon /system/bin/time_daemon
    class late_start
    user root
@@ -299,70 +264,6 @@ service audiod /system/bin/audiod
    class late_start
    user system
    group system
-
-
-service usf_tester /system/bin/usf_tester
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_epos /system/bin/usf_epos
-    class main
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_gesture /system/bin/usf_gesture
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_sync_gesture /system/bin/usf_sync_gesture
-    user system
-    group system inet audio
-    disabled
-    oneshot
-
-service usf_p2p /system/bin/usf_p2p
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_hovering /system/bin/usf_hovering
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_proximity /system/bin/usf_proximity
-    class late_start
-    user system
-    group system inet audio
-
-service usf_pairing /system/bin/usf_pairing
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf_sw_calib /system/bin/usf_sw_calib
-    user system
-    group system inet
-    disabled
-    oneshot
-
-service usf-post-boot /system/bin/sh /system/etc/usf_post_boot.sh
-    class late_start
-    user root
-    disabled
-    oneshot
-
-on property:init.svc.bootanim=stopped
-    start usf-post-boot
 
 service imsqmidaemon /system/bin/imsqmidaemon
     class main

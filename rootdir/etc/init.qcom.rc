@@ -431,6 +431,7 @@ service iop /system/bin/iop
     group root
     disabled
     socket iop seqpacket 0666 root system
+    writepid /dev/cpuset/system-background/tasks
 
 service qcomsysd /system/bin/qcom-system-daemon
     class main
@@ -465,8 +466,13 @@ on property:persist.sys.ssr.enable_ramdumps=0
 
 on property:sys.boot_completed=1
     write /dev/kmsg "Boot completed "
-    #Reset the read_ahead_kb to 512
-    write /sys/block/dm-0/queue/read_ahead_kb 512
+    # Reset the read_ahead_kb to 256
+    write /sys/block/dm-0/queue/read_ahead_kb 256
+    write /sys/block/sda/queue/read_ahead_kb 256
+    write /sys/block/sde/queue/read_ahead_kb 256
+
+    # CPE fw_name used by sound trigger HAL
+    chown media audio /sys/kernel/wcd_cpe0/fw_name
 
 on property:persist.radio.atfwd.start=false
     stop atfwd
@@ -507,18 +513,7 @@ on property:bluetooth.startbtsnoop=true
 on property:bluetooth.startbtsnoop=false
     stop btsnoop
 
-service qcom-c_core-sh /system/bin/sh /init.qcom.class_core.sh
-    class core
-    user root
-    oneshot
-
-service qcom-c_main-sh /system/bin/sh /init.class_main.sh
-    class main
-    user root
-    oneshot
-
 on property:vold.decrypt=trigger_restart_framework
-    start qcom-c_main-sh
     start config_bt_addr
     start config_bluetooth
 
@@ -645,7 +640,6 @@ service port-bridge /system/bin/port-bridge
     class main
     user radio system
     group radio system inet
-    disabled
     oneshot
 
 service qmiproxy /system/bin/qmiproxy
@@ -659,36 +653,30 @@ service qmuxd /system/bin/qmuxd
     class main
     user radio
     group radio audio bluetooth gps nfc qcom_diag
-    disabled
 
 service netmgrd /system/bin/netmgrd
     class main
-    disabled
 
 service ipacm-diag /system/bin/ipacm-diag
     class main
     user system
     socket ipacm_log_file dgram 660 system net_admin
     group net_admin qcom_diag
-    disabled
 
 service ipacm /system/bin/ipacm
     class main
     user net_admin
     group net_admin inet
-    disabled
 
 service qti /system/vendor/bin/qti
     class main
     user radio
     group radio net_raw qcom_diag usb net_admin
-    disabled
 
 service sensors /system/bin/sensors.qcom
     class core
     user root
     group root
-    disabled
 
 on property:ro.use_data_netmgrd=false
     # netmgr not supported on specific target
@@ -896,53 +884,20 @@ service qcom-sh /system/bin/sh /init.qcom.sh
     user root
     oneshot
 
-service sensor-sh /system/bin/sh /init.qcom.sensors.sh
-    class core
-    user root
-    oneshot
-
 service qcom-post-boot /system/bin/sh /system/etc/init.qcom.post_boot.sh
     class late_start
     user root
     disabled
     oneshot
 
-service qti-testscripts /system/bin/sh /system/etc/init.qcom.testscripts.sh
-    class late_start
-    user root
-    disabled
-    oneshot
-    seclabel u:r:qti-testscripts:s0
-
-service wifi-sdio-on /system/bin/sh /system/etc/init.qcom.sdio.sh
-    class late_start
-    group wifi inet
-    disabled
-    oneshot
-
-service wifi-crda /system/bin/sh /system/etc/init.crda.sh
-   class late_start
-   user root
-   disabled
-   oneshot
-
-service config-zram /system/bin/sh /system/etc/init.qcom.zram.sh
-   class late_start
-   user root
-   disabled
-   oneshot
-
 on property:sys.boot_completed=1
     start qcom-post-boot
-    start qti-testscripts
-    start config-zram
-
 service atfwd /system/bin/ATFWD-daemon
     class late_start
     user system
     group system radio
 
-service hostapd /system/bin/hostapd -dd /data/hostapd/hostapd.conf
+service hostapd /system/bin/hostapd /data/hostapd/hostapd.conf
     class late_start
     user root
     group root
@@ -1080,38 +1035,17 @@ service diag_mdlog_stop /system/bin/diag_mdlog -k
     disabled
     oneshot
 
-service qlogd /system/xbin/qlogd
-    socket qlogd stream 0662 system system
-    class main
-    disabled
-on property:persist.sys.qlogd=1
-    start qlogd
-on property:persist.sys.qlogd=0
-    stop qlogd
-
-service dloadsvr /system/bin/sh /system/etc/init.qcom.dloadsetup.sh
-    disabled
-    oneshot
-
-service quit_dloadsvr /system/bin/sh /system/etc/init.qcom.dload_quit.sh
-    disabled
-    oneshot
-
-on property:persist.sys.dload.state=1
-    start dloadsvr
-on property:persist.sys.dload.state=0
-    start quit_dloadsvr
-
 service vm_bms /system/bin/vm_bms
     user root
     group root
     disabled
 
 service msm_irqbalance /system/bin/msm_irqbalance -f /system/vendor/etc/msm_irqbalance.conf
-    class core
+    class main
     user root
     group root
     disabled
+    writepid /dev/cpuset/system-background/tasks
 
 service wfdservice /system/bin/wfdservice
     class main
@@ -1119,14 +1053,6 @@ service wfdservice /system/bin/wfdservice
     group audio camera inet net_bt_stack drmrpc media_rw media input net_admin
     #removed these because of limit of 12 groups
     #graphics net_bt net_bt_admin bluetooth
-
-service RIDL /system/vendor/bin/RIDLClient.exe
-    class late_start
-    oneshot
-    user system
-    group system inet log sdcard_r sdcard_rw qcom_diag
-    # removed for security team - misc bluetooth radio gps wifi diag media_rw
-    # limited to 12 groups.  Unused: audio usb net_bt_admin net_bt_stac net_raw net_admin
 
 # Coresight early boot service
 service cs-early-boot /system/bin/sh /persist/coresight/qdss.agent.sh early-boot /system/etc/init.qcom.debug.sh
@@ -1160,16 +1086,6 @@ service seemp_healthd /system/vendor/bin/seemp_healthd
     user system
     group system
 
-service alipaycad /system/bin/alipaycad
-    class main
-    socket alipaycad stream 600 system system
-
-service battd /system/bin/battd
-     class late_start
-     user log
-     group log
-     oneshot
-     disabled
 
 service yep_qmi_server /system/bin/yep_qmi_server
     class core
@@ -1185,30 +1101,11 @@ service yep_diag /system/bin/yepdiag
 on property:init.svc.qmuxd=running
     start wifi_mac
 
-on property:sys.boot_completed=1
-    start battd
-    start wechat_key
-
 service wifi_mac /system/bin/logwrapper /system/bin/set_wifi_mac
     class core
     user root
     oneshot
 
-service alipaycad /system/bin/alipaycad
-    class main
-    socket alipaycad stream 600 system system
-
-#boot start fidoca daemon
-service fidoca /system/vendor/bin/fidoca
-    class late_start
-    user system
-    group system
-
-# Seemp health service
-service seemp_healthd /system/vendor/bin/seemp_healthd
-    class late_start
-    user system
-    group system
 
 # add by letv for reduced power rate when normal charge be selected begin
 on property:persist.sys.le_fast_chrg_enable=1
@@ -1217,3 +1114,21 @@ on property:persist.sys.le_fast_chrg_enable=1
 on property:persist.sys.le_fast_chrg_enable=0
     write /sys/class/power_supply/le_ab/le_quick_charge_mode 1
 # add by letv for reduced power rate when normal charge be selected end
+
+# happy dance!
+on post-fs-data
+    write /sys/class/leds/red/brightness 0
+    write /sys/class/leds/red/blink 0
+    write /sys/class/leds/green/brightness 0
+    write /sys/class/leds/green/blink 0
+    write /sys/class/leds/blue/brightness 0
+    write /sys/class/leds/blue/blink 0
+    write /sys/class/leds/rgb/rgb_blink 0
+    write /sys/class/leds/green/start_idx 0
+    write /sys/class/leds/green/pause_hi 0
+    write /sys/class/leds/green/pause_lo 0
+    write /sys/class/leds/green/ramp_step_ms 50
+    write /sys/class/leds/green/duty_pcts "16,25,33,41,50,58,66,74,83,91,100"
+    write /sys/class/leds/green/brightness 255
+    write /sys/class/leds/blue/brightness 255
+    write /sys/class/leds/green/blink 1
