@@ -129,7 +129,6 @@ void vendor_load_properties() {
         return;
     property_set("ro.config.product", "le_x2");
     property_set("ro.product.model", "Le X820");
-    property_set("ro.mk.maintainer", "zhaochengw");
     init_alarm_boot_properties();
 }
 

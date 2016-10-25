@@ -16,11 +16,15 @@
 
 $(call inherit-product-if-exists, vendor/letv/le_x2/le_x2-vendor.mk)
 
+$(call inherit-product-if-exists, vendor/adds/copyfiles.mk)
+
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
 # Permissions
 PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
+    frameworks/native/data/etc/android.hardware.audio.pro.xml:system/etc/permissions/android.hardware.audio.pro.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
@@ -55,6 +59,10 @@ PRODUCT_COPY_FILES += \
 # Screen density
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxxhdpi
+
+# Device was launched with M
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.first_api_level=23
 
 # Boot animation
 TARGET_SCREEN_HEIGHT := 2560
@@ -101,15 +109,13 @@ PRODUCT_PACKAGES += \
 
 # Audio configuration file
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/audio/audio_output_policy.conf:system/vendor/etc/audio_output_policy.conf \
-    $(LOCAL_PATH)/audio/audio_output_policy_letv.conf:system/vendor/etc/audio_output_policy_letv.conf \
     $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-    $(LOCAL_PATH)/audio/mixer_paths_letv.xml:system/etc/mixer_paths_letv.xml \
-    $(LOCAL_PATH)/audio/mixer_paths_tasha.xml:system/etc/mixer_paths_tasha.xml \
-    $(LOCAL_PATH)/audio/aanc_tuning_mixer.txt:system/etc/aanc_tuning_mixer.txt \
-    $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
+    $(LOCAL_PATH)/audio/audio_output_policy.conf:system/vendor/etc/audio_output_policy.conf \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:system/etc/audio_platform_info.xml \
+    $(LOCAL_PATH)/audio/audio_platform_info_i2s.xml:system/etc/audio_platform_info_i2s.xml \
+    $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
     $(LOCAL_PATH)/audio/listen_platform_info.xml:system/etc/listen_platform_info.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_tasha.xml:system/etc/mixer_paths_tasha.xml \
     $(LOCAL_PATH)/audio/sound_trigger_mixer_paths_wcd9330.xml:system/etc/sound_trigger_mixer_paths_wcd9330.xml \
     $(LOCAL_PATH)/audio/sound_trigger_mixer_paths.xml:system/etc/sound_trigger_mixer_paths.xml \
     $(LOCAL_PATH)/audio/sound_trigger_platform_info.xml:system/etc/sound_trigger_platform_info.xml
@@ -126,8 +132,7 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_PACKAGES += \
     Snap \
-    libstlport \
-    libxml2
+    libstlport
 
 # Yep
 PRODUCT_PACKAGES += \
@@ -138,10 +143,6 @@ PRODUCT_PACKAGES += \
     cneapiclient \
     com.quicinc.cne \
     services-ext
-
-# DataServices
-PRODUCT_PACKAGES += \
-    librmnetctl
 
 # Display
 PRODUCT_PACKAGES += \
@@ -205,12 +206,14 @@ PRODUCT_PACKAGES += \
 
 # Media
 PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(LOCAL_PATH)/configs/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
+    $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml
+
+PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml \
-    $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
-    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
-    $(LOCAL_PATH)/configs/media_codecs_performance.xml:system/etc/media_codecs_performance.xml
+    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
 
 PRODUCT_PACKAGES += \
     libc2dcolorconvert \
@@ -222,6 +225,7 @@ PRODUCT_PACKAGES += \
     libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
+    libOmxVdecHevc \
     libstagefrighthw
 
 # Power
@@ -234,44 +238,16 @@ PRODUCT_PACKAGES += \
 
 # Ramdisk
 PRODUCT_PACKAGES += \
-    charger.fstab.qcom \
     fstab.qcom \
-    init.class_main.sh \
-    init.mdm.sh \
-    init.qcom.class_core.sh \
-    init.qcom.early_boot.sh \
+    init.qcom.bt.sh \
+    init.qcom.power.rc \
+    qfp_boot.sh \
     init.qcom.rc \
-    init.qcom.sensors.sh \
     init.qcom.sh \
-    init.qcom.syspart_fixup.sh \
     init.qcom.usb.rc \
     init.qcom.usb.sh \
     init.target.rc \
     ueventd.qcom.rc
-
-
-# Qcom script
-PRODUCT_PACKAGES += \
-    hcidump.sh \
-    hsic.control.bt.sh \
-    init.ath3k.bt.sh \
-    init.crda.sh \
-    init.qcom.audio.sh \
-    init.qcom.bt.sh \
-    init.qcom.coex.sh \
-    init.qcom.debug.sh \
-    init.qcom.dload_quit.sh \
-    init.qcom.dloadsetup.sh \
-    init.qcom.efs.sync.sh \
-    init.qcom.fm.sh \
-    init.qcom.post_boot.sh \
-    init.qcom.sdio.sh \
-    init.qcom.uicc.sh \
-    init.qcom.wifi.sh \
-    init.qcom.zram.sh \
-    init.qti.ims.sh \
-    qca6234-service.sh \
-    qfp_boot.sh
 
 # Display xml
 PRODUCT_PACKAGES += \
@@ -284,6 +260,11 @@ PRODUCT_PACKAGES += \
     dsi_config.xml \
     netmgr_config.xml \
     qmi_config.xml \
+
+# RIL
+PRODUCT_PACKAGES += \
+    librmnetctl \
+    libxml2
 
 # Sensors
 PRODUCT_PACKAGES += \
@@ -303,19 +284,23 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/hostapd.accept:system/etc/hostapd/hostapd.accept \
-    $(LOCAL_PATH)/configs/hostapd.conf:system/etc/hostapd/hostapd_default.conf \
-    $(LOCAL_PATH)/configs/hostapd.deny:system/etc/hostapd/hostapd.deny \
-    $(LOCAL_PATH)/configs/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf \
-    $(LOCAL_PATH)/configs/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf \
-    $(LOCAL_PATH)/configs/wpa_supplicant_wcn.conf:system/etc/wifi/wpa_supplicant_wcn.conf
+    $(LOCAL_PATH)/wifi/hostapd.accept:system/etc/hostapd/hostapd.accept \
+    $(LOCAL_PATH)/wifi/hostapd.conf:system/etc/hostapd/hostapd_default.conf \
+    $(LOCAL_PATH)/wifi/hostapd.deny:system/etc/hostapd/hostapd.deny \
+    $(LOCAL_PATH)/wifi/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf \
+    $(LOCAL_PATH)/wifi/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf \
+    $(LOCAL_PATH)/wifi/wpa_supplicant_wcn.conf:system/etc/wifi/wpa_supplicant_wcn.conf
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/wifi/fstman.ini:system/etc/wifi/fstman.ini \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/qca_cld/WCNSS_cfg.dat
 
 # Properties
+
+# Storage
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.sys.sdcardfs=true
+
 # misc
 PRODUCT_PROPERTY_OVERRIDES += \
     sys.hallsensor.enable=1
@@ -326,7 +311,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Low latency audio buffer size in frames
 PRODUCT_PROPERTY_OVERRIDES += \
-    audio_hal.period_size=192
+    audio_hal.period_size=160
 
 PRODUCT_PROPERTY_OVERRIDES += \
     camera.disable_zsl_mode=1

@@ -313,4 +313,12 @@ if [ "$prev_version_info" != "$cur_version_info" ]; then
     cp /firmware/verinfo/ver_info.txt /data/misc/radio/ver_info.txt
     chown radio.radio /data/misc/radio/ver_info.txt
 fi
+rm -rf /data/misc/radio/modem_config
+mkdir /data/misc/radio/modem_config
+chmod 770 /data/misc/radio/modem_config
+#ifdef VENDOR_EDIT
+# modify the source path to /system/etc/firmware/mbn_ota/ , hanqingpu, 20151119
+cp -r /system/etc/firmware/mbn_ota/* /data/misc/radio/modem_config
+#endif /*VENDOR_EDIT*/
+chown -hR radio.radio /data/misc/radio/modem_config
 echo 1 > /data/misc/radio/copy_complete
