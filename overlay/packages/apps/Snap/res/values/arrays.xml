@@ -16,33 +16,6 @@
  -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
- 
-	<string-array name="pref_camera_scenemode_entries" translatable="false">
-        <item>@string/pref_camera_scenemode_entry_auto</item>
-        <item>@string/pref_camera_scenemode_entry_steadyphoto</item>
-        <item>@string/pref_camera_scenemode_entry_hdr</item>
-		<item>@string/pref_camera_scenemode_entry_asd</item>
-		<item>@string/pref_camera_advanced_feature_entry_chromaflash</item>
-        <item>@string/pref_camera_scenemode_entry_sports</item>
-	</string-array>
-
-    <string-array name="pref_camera_scenemode_entryvalues" translatable="false">
-		<item>auto</item>
-		<item>steadyphoto</item>
-		<item>hdr</item>
-		<item>asd</item>
-		<item>chroma-flash-on</item>
-		<item>sports</item>
-	</string-array>
-
-    <array name="scenemode_thumbnails" translatable="false">
-		<item>@drawable/ic_scene_mode_auto</item>
-        <item>@drawable/ic_scene_mode_entry_steadyphoto</item>
-        <item>@drawable/ic_scene_mode_hdr</item>
-        <item>@drawable/ic_scene_mode_smartauto</item>
-        <item>@drawable/ic_scene_mode_entry_dark</item>
-		<item>@drawable/ic_scene_mode_sports</item>
-	</array>
 	
     <string-array name="pref_camera_picturesize_entryvalues" translatable="false">
         <item>5312x3984</item> <!-- 540 -->

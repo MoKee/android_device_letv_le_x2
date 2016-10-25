@@ -44,23 +44,17 @@ $(LOCAL_BUILT_MODULE): WCNSS_INI_SYMLINK := $(TARGET_OUT)/etc/firmware/wlan/qca_
 $(LOCAL_BUILT_MODULE): ACTUAL_MAC_FILE := /persist/wlan_mac.bin
 $(LOCAL_BUILT_MODULE): WCNSS_MAC_SYMLINK := $(TARGET_OUT)/etc/firmware/wlan/qca_cld/wlan_mac.bin
 
-$(LOCAL_BUILT_MODULE): ACTUAL_MODULE_FILE := /system/lib/modules/qca_cld/qca_cld_wlan.ko
-$(LOCAL_BUILT_MODULE): WCNSS_MODULE_SYMLINK := $(TARGET_OUT)/lib/modules/wlan.ko
-
 
 $(LOCAL_BUILT_MODULE): $(LOCAL_PATH)/Android.mk
 $(LOCAL_BUILT_MODULE):
 	$(hide) echo "Making symlinks for wifi"
 	$(hide) mkdir -p $(dir $@)
 	$(hide) mkdir -p $(dir $(WCNSS_INI_SYMLINK))
-	$(hide) mkdir -p $(dir $(WCNSS_MODULE_SYMLINK))
 	$(hide) rm -rf $@
 	$(hide) rm -rf $(WCNSS_INI_SYMLINK)
 	$(hide) ln -sf $(ACTUAL_INI_FILE) $(WCNSS_INI_SYMLINK)
 	$(hide) rm -rf $(WCNSS_MAC_SYMLINK)
 	$(hide) ln -sf $(ACTUAL_MAC_FILE) $(WCNSS_MAC_SYMLINK)
-	$(hide) rm -rf $(WCNSS_MODULE_SYMLINK)
-	$(hide) ln -sf $(ACTUAL_MODULE_FILE) $(WCNSS_MODULE_SYMLINK)
 	$(hide) touch $@
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
@@ -77,7 +71,5 @@ $(IMS_SYMLINKS): $(LOCAL_INSTALLED_MODULE)
 ALL_DEFAULT_INSTALLED_MODULES += $(IMS_SYMLINKS)
 
 include device/letv/le_x2/tftp.mk
-
-include device/letv/le_x2/kernel/AndroidKernel.mk
 
 endif
