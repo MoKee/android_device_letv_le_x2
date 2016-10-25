@@ -58,6 +58,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxxhdpi
 
+# Device was launched with M
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.first_api_level=23
+
 # Boot animation
 TARGET_SCREEN_HEIGHT := 2560
 TARGET_SCREEN_WIDTH := 1440
@@ -103,15 +107,13 @@ PRODUCT_PACKAGES += \
 
 # Audio configuration file
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/audio/audio_output_policy.conf:system/vendor/etc/audio_output_policy.conf \
-    $(LOCAL_PATH)/audio/audio_output_policy_letv.conf:system/vendor/etc/audio_output_policy_letv.conf \
     $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-    $(LOCAL_PATH)/audio/mixer_paths_letv.xml:system/etc/mixer_paths_letv.xml \
-    $(LOCAL_PATH)/audio/mixer_paths_tasha.xml:system/etc/mixer_paths_tasha.xml \
-    $(LOCAL_PATH)/audio/aanc_tuning_mixer.txt:system/etc/aanc_tuning_mixer.txt \
-    $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
+    $(LOCAL_PATH)/audio/audio_output_policy.conf:system/vendor/etc/audio_output_policy.conf \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:system/etc/audio_platform_info.xml \
+    $(LOCAL_PATH)/audio/audio_platform_info_i2s.xml:system/etc/audio_platform_info_i2s.xml \
+    $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
     $(LOCAL_PATH)/audio/listen_platform_info.xml:system/etc/listen_platform_info.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_tasha.xml:system/etc/mixer_paths_tasha.xml \
     $(LOCAL_PATH)/audio/sound_trigger_mixer_paths_wcd9330.xml:system/etc/sound_trigger_mixer_paths_wcd9330.xml \
     $(LOCAL_PATH)/audio/sound_trigger_mixer_paths.xml:system/etc/sound_trigger_mixer_paths.xml \
     $(LOCAL_PATH)/audio/sound_trigger_platform_info.xml:system/etc/sound_trigger_platform_info.xml
@@ -128,8 +130,7 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_PACKAGES += \
     Snap \
-    libstlport \
-    libxml2
+    libstlport
 
 # Yep
 PRODUCT_PACKAGES += \
@@ -140,10 +141,6 @@ PRODUCT_PACKAGES += \
     cneapiclient \
     com.quicinc.cne \
     services-ext
-
-# DataServices
-PRODUCT_PACKAGES += \
-    librmnetctl
 
 # Display
 PRODUCT_PACKAGES += \
@@ -226,6 +223,7 @@ PRODUCT_PACKAGES += \
     libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
+    libOmxVdecHevc \
     libstagefrighthw
 
 # Power
@@ -240,7 +238,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     fstab.qcom \
     init.qcom.bt.sh \
-    init.qcom.post_boot.sh \
+    init.qcom.power.rc \
     qfp_boot.sh \
     init.qcom.rc \
     init.qcom.sh \
@@ -260,6 +258,11 @@ PRODUCT_PACKAGES += \
     dsi_config.xml \
     netmgr_config.xml \
     qmi_config.xml \
+
+# RIL
+PRODUCT_PACKAGES += \
+    librmnetctl \
+    libxml2
 
 # Sensors
 PRODUCT_PACKAGES += \
@@ -290,24 +293,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/qca_cld/WCNSS_cfg.dat
 
-# Properties
-# misc
-PRODUCT_PROPERTY_OVERRIDES += \
-    sys.hallsensor.enable=1
-    
-# Reduce client buffer size for fast audio output tracks
-PRODUCT_PROPERTY_OVERRIDES += \
-    af.fast_track_multiplier=1
-
-# Low latency audio buffer size in frames
-PRODUCT_PROPERTY_OVERRIDES += \
-    audio_hal.period_size=160
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    camera.disable_zsl_mode=1
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=libqti-perfd-client.so
 
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-dalvik-heap.mk)
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-hwui-memory.mk)
