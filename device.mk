@@ -129,6 +129,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     external/ant-wireless/antradio-library/com.dsi.ant.antradio_library.xml:system/etc/permissions/com.dsi.ant.antradio_library.xml
 
+# Browser
+PRODUCT_PACKAGES += \
+    Gello
+
 # Camera
 PRODUCT_PACKAGES += \
     Snap \
@@ -295,29 +299,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/qca_cld/WCNSS_cfg.dat
 
-# Properties
-
-# Storage
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sys.sdcardfs=true
-
-# misc
-PRODUCT_PROPERTY_OVERRIDES += \
-    sys.hallsensor.enable=1
-    
-# Reduce client buffer size for fast audio output tracks
-PRODUCT_PROPERTY_OVERRIDES += \
-    af.fast_track_multiplier=1
-
-# Low latency audio buffer size in frames
-PRODUCT_PROPERTY_OVERRIDES += \
-    audio_hal.period_size=160
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    camera.disable_zsl_mode=1
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.extension_library=libqti-perfd-client.so
 
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-dalvik-heap.mk)
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-4096-hwui-memory.mk)
