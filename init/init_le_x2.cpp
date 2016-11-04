@@ -28,10 +28,11 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <fcntl.h>
 
+#include <cutils/properties.h>
 #include "vendor_init.h"
-#include "property_service.h"
 #include "log.h"
 #include "util.h"
 

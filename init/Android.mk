@@ -19,7 +19,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 LOCAL_C_INCLUDES := system/core/init
-LOCAL_SRC_FILES := libinit_msm8996.cpp
-LOCAL_MODULE := libinit_msm8996
+LOCAL_SRC_FILES := init_le_x2.cpp
+LOCAL_MODULE := libinit_le_x2
 
 include $(BUILD_STATIC_LIBRARY)
