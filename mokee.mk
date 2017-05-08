@@ -18,7 +18,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 $(call inherit-product, device/letv/le_x2/device.mk)
 
-# Inherit some common MK stuff.
+# Inherit some common lineage stuff.
 $(call inherit-product, vendor/mk/config/common_full_phone.mk)
 
 PRODUCT_NAME := mk_le_x2

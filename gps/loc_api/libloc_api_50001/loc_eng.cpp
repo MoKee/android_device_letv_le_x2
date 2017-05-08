@@ -290,6 +290,7 @@ LocEngStopFix::LocEngStopFix(LocEngAdapter* adapter) :
 inline void LocEngStopFix::proc() const
 {
     loc_eng_data_s_type* locEng = (loc_eng_data_s_type*)mAdapter->getOwner();
+    mAdapter->clearGnssSvUsedListData();
     loc_eng_stop_handler(*locEng);
 }
 inline void LocEngStopFix::locallog() const
@@ -523,15 +524,15 @@ struct LocEngSuplVer : public LocMsg {
 };
 
 struct LocEngSuplMode : public LocMsg {
-    UlpProxyBase* mUlp;
+    LocEngAdapter* mAdapter;
 
-    inline LocEngSuplMode(UlpProxyBase* ulp) :
-        LocMsg(), mUlp(ulp)
+    inline LocEngSuplMode(LocEngAdapter* adapter) :
+        LocMsg(), mAdapter(adapter)
     {
         locallog();
     }
     inline virtual void proc() const {
-        mUlp->setCapabilities(ContextBase::getCarrierCapabilities());
+        mAdapter->getUlpProxy()->setCapabilities(ContextBase::getCarrierCapabilities());
     }
     inline  void locallog() const {
     }
@@ -806,6 +807,10 @@ void LocEngReportPosition::proc() const {
                         (gps_conf.ACCURACY_THRES != 0) &&
                         (mLocation.gpsLocation.accuracy >
                          gps_conf.ACCURACY_THRES)))) {
+                if (mLocationExtended.flags & GPS_LOCATION_EXTENDED_HAS_GNSS_SV_USED_DATA)
+                {
+                    adapter->setGnssSvUsedListData(mLocationExtended.gnss_sv_used_ids);
+                }
                 locEng->location_cb((UlpLocation*)&(mLocation),
                                     (void*)mLocationExt);
                 reported = true;
@@ -880,14 +885,57 @@ void LocEngReportSv::proc() const {
 
     if (locEng->mute_session_state != LOC_MUTE_SESS_IN_SESSION)
     {
+        GnssSvStatus gnssSvStatus;
+        memcpy(&gnssSvStatus,&mSvStatus,sizeof(GnssSvStatus));
+        if (adapter->isGnssSvIdUsedInPosAvail())
+        {
+            GnssSvUsedInPosition gnssSvIdUsedInPosition =
+                                adapter->getGnssSvUsedListData();
+            int numSv = gnssSvStatus.num_svs;
+            int16_t gnssSvId = 0;
+            uint64_t svUsedIdMask = 0;
+            for (int i=0; i < numSv; i++)
+            {
+                gnssSvId = gnssSvStatus.gnss_sv_list[i].svid;
+                switch(gnssSvStatus.gnss_sv_list[i].constellation) {
+                case GNSS_CONSTELLATION_GPS:
+                    svUsedIdMask = gnssSvIdUsedInPosition.gps_sv_used_ids_mask;
+                    break;
+                case GNSS_CONSTELLATION_GLONASS:
+                    svUsedIdMask = gnssSvIdUsedInPosition.glo_sv_used_ids_mask;
+                    break;
+                case GNSS_CONSTELLATION_BEIDOU:
+                    svUsedIdMask = gnssSvIdUsedInPosition.bds_sv_used_ids_mask;
+                    break;
+                case GNSS_CONSTELLATION_GALILEO:
+                    svUsedIdMask = gnssSvIdUsedInPosition.gal_sv_used_ids_mask;
+                    break;
+                default:
+                    svUsedIdMask = 0;
+                    break;
+                }
+
+                // If SV ID was used in previous position fix, then set USED_IN_FIX
+                // flag, else clear the USED_IN_FIX flag.
+                if (svUsedIdMask & (1 << (gnssSvId - 1)))
+                {
+                    gnssSvStatus.gnss_sv_list[i].flags |= GNSS_SV_FLAGS_USED_IN_FIX;
+                }
+                else
+                {
+                    gnssSvStatus.gnss_sv_list[i].flags &= ~GNSS_SV_FLAGS_USED_IN_FIX;
+                }
+            }
+        }
+
         if (locEng->gnss_sv_status_cb != NULL) {
             LOC_LOGE("Calling gnss_sv_status_cb");
-            locEng->gnss_sv_status_cb((GnssSvStatus*)&(mSvStatus));
+            locEng->gnss_sv_status_cb((GnssSvStatus*)&(gnssSvStatus));
         }
 
         if (locEng->generateNmea)
         {
-            loc_eng_nmea_generate_sv(locEng, mSvStatus, mLocationExtended);
+            loc_eng_nmea_generate_sv(locEng, gnssSvStatus, mLocationExtended);
         }
     }
 }
@@ -1248,16 +1296,7 @@ LocEngReqRelWifi::~LocEngReqRelWifi() {
 }
 void LocEngReqRelWifi::proc() const {
     loc_eng_data_s_type* locEng = (loc_eng_data_s_type*)mLocEng;
-    if (locEng->wifi_nif) {
-        WIFISubscriber s(locEng->wifi_nif, mSSID, mPassword, mSenderId);
-        if (mIsReq) {
-            locEng->wifi_nif->subscribeRsrc((Subscriber*)&s);
-        } else {
-            locEng->wifi_nif->unsubscribeRsrc((Subscriber*)&s);
-        }
-    } else {
-        locEng->adapter->atlOpenStatus(mSenderId, 0, NULL, -1, mType);
-    }
+    locEng->adapter->atlOpenStatus(mSenderId, 0, NULL, -1, mType);
 }
 inline void LocEngReqRelWifi::locallog() const {
     LOC_LOGV("%s - senderId: %d, ssid: %s, password: %s",
@@ -2024,7 +2063,6 @@ static int loc_eng_stop_handler(loc_eng_data_s_type &loc_eng_data)
    int ret_val = LOC_API_ADAPTER_ERR_SUCCESS;
 
    if (loc_eng_data.adapter->isInSession()) {
-
        ret_val = loc_eng_data.adapter->stopFix();
        loc_eng_data.adapter->setInSession(FALSE);
    }
@@ -2346,12 +2384,10 @@ void loc_eng_agps_init(loc_eng_data_s_type &loc_eng_data, AGpsExtCallbacks* call
         EXIT_LOG(%s, VOID_RET);
         return;
     }
-    bool agpsCapable = ((gps_conf.CAPABILITIES & GPS_CAPABILITY_MSA) ||
-                        (gps_conf.CAPABILITIES & GPS_CAPABILITY_MSB));
     LocEngAdapter* adapter = loc_eng_data.adapter;
     loc_eng_data.agps_status_cb = callbacks->status_cb;
 
-    if (agpsCapable && NULL != adapter) {
+    if (NULL != adapter) {
         if (adapter->mSupportsAgpsRequests) {
             adapter->sendMsg(new LocEngAgnssNifInit(&loc_eng_data));
         }
@@ -2374,25 +2410,27 @@ static void createAgnssNifs(loc_eng_data_s_type& locEng) {
     bool agpsCapable = ((gps_conf.CAPABILITIES & GPS_CAPABILITY_MSA) ||
                         (gps_conf.CAPABILITIES & GPS_CAPABILITY_MSB));
     LocEngAdapter* adapter = locEng.adapter;
-    if (agpsCapable && NULL != adapter && adapter->mSupportsAgpsRequests) {
+    if (NULL != adapter && adapter->mSupportsAgpsRequests) {
         if (NULL == locEng.internet_nif) {
             locEng.internet_nif= new AgpsStateMachine(servicerTypeAgps,
                                                        (void *)locEng.agps_status_cb,
                                                        AGPS_TYPE_WWAN_ANY,
                                                        false);
         }
-        if (NULL == locEng.agnss_nif) {
-            locEng.agnss_nif = new AgpsStateMachine(servicerTypeAgps,
-                                                     (void *)locEng.agps_status_cb,
-                                                     AGPS_TYPE_SUPL,
-                                                     false);
-        }
-        if (NULL == locEng.ds_nif &&
-            gps_conf.USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL &&
-            0 == adapter->initDataServiceClient()) {
-            locEng.ds_nif = new DSStateMachine(servicerTypeExt,
-                                                 (void *)dataCallCb,
-                                                 locEng.adapter);
+        if (agpsCapable) {
+            if (NULL == locEng.agnss_nif) {
+                locEng.agnss_nif = new AgpsStateMachine(servicerTypeAgps,
+                                                         (void *)locEng.agps_status_cb,
+                                                         AGPS_TYPE_SUPL,
+                                                         false);
+            }
+            if (NULL == locEng.ds_nif &&
+                gps_conf.USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL &&
+                0 == adapter->initDataServiceClient()) {
+                locEng.ds_nif = new DSStateMachine(servicerTypeExt,
+                                                     (void *)dataCallCb,
+                                                     locEng.adapter);
+            }
         }
     }
 }
@@ -2402,10 +2440,6 @@ static AgpsStateMachine*
 getAgpsStateMachine(loc_eng_data_s_type &locEng, AGpsExtType agpsType) {
     AgpsStateMachine* stateMachine;
     switch (agpsType) {
-    case AGPS_TYPE_WIFI: {
-        stateMachine = locEng.wifi_nif;
-        break;
-    }
     case AGPS_TYPE_INVALID:
     case AGPS_TYPE_SUPL: {
         stateMachine = locEng.agnss_nif;
@@ -2797,7 +2831,7 @@ void loc_eng_configuration_update (loc_eng_data_s_type &loc_eng_data,
                                                             gps_conf.A_GLONASS_POS_PROTOCOL_SELECT));
             }
             if (gps_conf_tmp.SUPL_MODE != gps_conf.SUPL_MODE) {
-                adapter->sendMsg(new LocEngSuplMode(adapter->getUlpProxy()));
+                adapter->sendMsg(new LocEngSuplMode(adapter));
             }
             // we always update lock mask, this is because if this is dsds device, we would not
             // know if modem has switched dds, if so, lock mask may also need to be updated.
@@ -2933,8 +2967,9 @@ void loc_eng_handle_engine_up(loc_eng_data_s_type &loc_eng_data)
     if (loc_eng_data.adapter->isInSession()) {
         // This sets the copy in adapter to modem
         loc_eng_data.adapter->setInSession(false);
-        loc_eng_data.adapter->sendMsg(new LocEngStartFix(loc_eng_data.adapter));
+        loc_eng_start_handler(loc_eng_data);
     }
+
     EXIT_LOG(%s, VOID_RET);
 }
 
