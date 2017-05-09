@@ -26,11 +26,11 @@ USE_CLANG_PLATFORM_BUILD := true
 
 TARGET_OTA_ASSERT_DEVICE := le_x2,LeMax2_CN,Le_x820,Le_X820
 
-DEVICE_PATH := device/letv/le_x2
+DEVICE_PATH := device/leeco/x2
 
 TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
 
-BOARD_VENDOR := letv
+BOARD_VENDOR := leeco
 
 # Use Snapdragon LLVM, if available
 TARGET_USE_SDCLANG := true
@@ -70,7 +70,7 @@ BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 TARGET_KERNEL_APPEND_DTB := true
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_KERNEL_SOURCE := kernel/letv/msm8996
+TARGET_KERNEL_SOURCE := kernel/leeco/msm8996
 TARGET_KERNEL_CONFIG := mokee_x2_defconfig
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
 
@@ -124,8 +124,8 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 
 # Init
-TARGET_INIT_VENDOR_LIB := libinit_le_x2
-TARGET_RECOVERY_DEVICE_MODULES := libinit_le_x2
+TARGET_INIT_VENDOR_LIB := libinit_x2
+TARGET_RECOVERY_DEVICE_MODULES := libinit_x2
 
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
@@ -231,4 +231,4 @@ WIFI_DRIVER_FW_PATH_P2P := "p2p"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 
 # inherit from the proprietary version
--include vendor/letv/le_x2/BoardConfigVendor.mk
+-include vendor/letv/x2/BoardConfigVendor.mk
