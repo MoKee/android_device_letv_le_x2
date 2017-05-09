@@ -20,7 +20,7 @@
         <receiver android:name="com.cyanogenmod.settings.doze.DozeReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="mokee.intent.action.UPDATE_PREFERENCE" />
+                <action android:name="cyanogenmod.intent.action.UPDATE_PREFERENCE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
