@@ -4,7 +4,6 @@ ro.internal.model=Le X820
 ro.config.le_hardware_version=HW_1.0.0
 ro.le.mtpname=Le Max2
 
-persist.sys.media.use-awesome=1
 sys.keep_app_1=com.bel.android.dspmanager
 ro.audio.samplerate=48000
 ro.audio.pcm.samplerate=48000

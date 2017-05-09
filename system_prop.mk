@@ -31,12 +31,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.qc.sdk.audio.ssr=false \
     persist.audio.ssr.3mic=false \
-    ro.qc.sdk.audio.fluencetype=fluence \
+    ro.qc.sdk.audio.fluencetype=none \
     persist.audio.fluence.voicecall=true \
     persist.audio.fluence.voicerec=false \
     persist.audio.fluence.speaker=true \
     tunnel.audio.encode=false \
-    media.aac_51_output_enabled=true \
     audio.heap.size.multiplier=7 \
     audio.offload.buffer.size.kb=64 \
     audio.offload.video=true \
@@ -44,7 +43,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.offload.pcm.24bit.enable=true \
     audio.offload.track.enable=false \
     audio.deep_buffer.media=true \
-    use.voice.path.for.pcm.voip=false \
+    use.voice.path.for.pcm.voip=true \
     audio.offload.multiaac.enable=true \
     audio.offload.gapless.enabled=true \
     audio.safx.pbe.enabled=true \
@@ -52,10 +51,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.dolby.ds2.enabled=false \
     audio.dolby.ds2.hardbypass=false \
     audio.offload.passthrough=false \
-    audio.offload.multiple.enabled=true \
+    audio.offload.multiple.enabled=false \
     audio.offload.min.duration.secs=30 \
     af.fast_track_multiplier=1 \
-    audio_hal.period_size=192
+    audio_hal.period_size=192 \
+    audio.sv.earpiece.enable=true \
+    audio.sv.speaker.enable=false
 
 # Bluetooth
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -77,10 +78,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Camera
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.camera.HAL3.enabled=1 \
-    persist.camera.imglib.fddsp=1 \
-    persist.camera.llc=1 \
-    persist.camera.llnoise=1 \
-
+    camera.disable_zsl_mode=1
 
 # CNE
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -109,7 +107,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     sdm.perf_hint_window=50 \
     persist.hwc.enable_vds=1 \
     sdm.debug.disable_rotator_split=1 \
-    ro.persist.qcapb = 1
+    ro.persist.qcapb=1
 
 # OpenGLES
 PRODUCT_PROPERTY_OVERRIDES += \
