@@ -304,7 +304,7 @@ PRODUCT_PACKAGES += \
 
 # LePref Files
 PRODUCT_COPY_FILES += \
-    $(call find-copy-subdir-files,*,device/letv/le_x2/lepref/files,/system/etc)
+    $(call find-copy-subdir-files,*,device/leeco/x2/lepref/files,/system/etc)
 
 # Wifi
 PRODUCT_PACKAGES += \
