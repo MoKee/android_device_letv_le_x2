@@ -1,5 +1,8 @@
+#Hex OTA
+hex.updater.uri=https://raw.githubusercontent.com/HexagonRom/HexUpdate_API/hex-7.1/x2.json
+
 # Product
-ro.config.product=le_x2
+ro.config.product=x2
 ro.internal.model=Le X820
 ro.config.le_hardware_version=HW_1.0.0
 ro.le.mtpname=Le Max2
