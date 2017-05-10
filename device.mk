@@ -171,9 +171,6 @@ PRODUCT_PACKAGES += \
     liboverlay \
     libtinyxml
 
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/FOSSConfig.xml:system/etc/FOSSConfig.xml
-
 # Doze mode
 PRODUCT_PACKAGES += \
     LetvDoze
