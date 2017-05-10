@@ -52,5 +52,35 @@
         <!-- followed by perf lock options                             -->
         <param key="perf_lock_opts" value="2, 0x101, 0x20F"/>
     </config_params>
+
+<device_names>
+        <!-- Output devices -->
+        <device name="SND_DEVICE_OUT_HEADPHONES" alias="headphones-44.1" />
+        <device name="SND_DEVICE_OUT_VOICE_HANDSET" alias="voice-handset" />
+        <device name="SND_DEVICE_OUT_VOICE_SPEAKER" alias="voicemmode1-call smartpa" />
+        <device name="SND_DEVICE_OUT_VOICE_HEADPHONES" alias="voice-headphones" />
+        <device name="SND_DEVICE_OUT_VOICE_TTY_FULL_HEADPHONES" alias="voice-tty-full-headphones" />
+        <device name="SND_DEVICE_OUT_VOICE_TTY_VCO_HEADPHONES" alias="voice-tty-vco-headphones" />
+        <device name="SND_DEVICE_OUT_VOICE_TTY_HCO_HANDSET" alias="voice-tty-hco-handset" />
+
+        <!-- Input devices -->
+        <device name="SND_DEVICE_IN_HANDSET_MIC" alias="handset-mic" />
+        <device name="SND_DEVICE_IN_HANDSET_DMIC" alias="handset-dmic-endfire" />
+        <device name="SND_DEVICE_IN_SPEAKER_MIC" alias="speaker-mic" />
+        <device name="SND_DEVICE_IN_SPEAKER_DMIC" alias="speaker-dmic-endfire" />
+        <device name="SND_DEVICE_IN_HEADSET_MIC" alias="headset-mic" />
+        <device name="SND_DEVICE_IN_VOICE_SPEAKER_MIC" alias="voice-speaker-mic" />
+        <device name="SND_DEVICE_IN_VOICE_HEADSET_MIC" alias="voice-headset-mic" />
+        <device name="SND_DEVICE_IN_CAMCORDER_MIC" alias="camcorder-mic" />
+        <device name="SND_DEVICE_IN_VOICE_DMIC" alias="voice-dmic-ef" />
+        <device name="SND_DEVICE_IN_VOICE_SPEAKER_DMIC" alias="voice-speaker-dmic-ef" />
+        <device name="SND_DEVICE_IN_VOICE_TTY_FULL_HEADSET_MIC" alias="voice-tty-full-headset-mic" />
+        <device name="SND_DEVICE_IN_VOICE_TTY_VCO_HANDSET_MIC" alias="voice-tty-hco-headset-mic" />
+        <device name="SND_DEVICE_IN_VOICE_TTY_HCO_HEADSET_MIC" alias="voice-tty-vco-handset-mic" />
+        <device name="SND_DEVICE_IN_VOICE_REC_MIC" alias="voice-rec-mic" />
+        <device name="SND_DEVICE_IN_VOICE_REC_DMIC_STEREO" alias="speaker-stereo-dmic-ef" />
+        <device name="SND_DEVICE_IN_HANDSET_STEREO_DMIC" alias="handset-stereo-dmic-ef" />
+        <device name="SND_DEVICE_IN_SPEAKER_STEREO_DMIC" alias="speaker-stereo-dmic-ef" />
+    </device_names>
 </audio_platform_info>
 
