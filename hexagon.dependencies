@@ -1,7 +1,7 @@
 [
   {
-    "repository": "android_vendor_letv_x2",
-    "target_path": "vendor/letv/x2"
+    "repository": "proprietary_vendor_leeco",
+    "target_path": vendor/leeco"
   },
   {
     "repository": "android_kernel_leeco_msm8996",
