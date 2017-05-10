@@ -231,4 +231,5 @@ WIFI_DRIVER_FW_PATH_P2P := "p2p"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 
 # inherit from the proprietary version
--include vendor/letv/x2/BoardConfigVendor.mk
+-include vendor/leeco/x2/BoardConfigVendor.mk
+-include vendor/leeco/msm8996-common/BoardConfigVendor.mk
