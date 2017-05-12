@@ -15,10 +15,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     mm.enable.qcom_parser=4194303 \
     persist.mm.enable.prefetch=true
 
-# Enable AAC 5.1 output
-PRODUCT_PROPERTY_OVERRIDES += \
-    media.aac_51_output_enabled=true
-
 # Additional i/p buffer in case of encoder DCVS
 PRODUCT_PROPERTY_OVERRIDES += \
     vidc.enc.dcvs.extra-buff-count=2
@@ -41,7 +37,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.offload.video=true \
     audio.offload.pcm.16bit.enable=true \
     audio.offload.pcm.24bit.enable=true \
-    audio.offload.track.enable=false \
+    audio.offload.track.enable=true \
     audio.deep_buffer.media=true \
     use.voice.path.for.pcm.voip=true \
     audio.offload.multiaac.enable=true \
@@ -80,6 +76,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.camera.HAL3.enabled=1 \
     camera.disable_zsl_mode=1
 
+# Display power reduction (FOSS)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.qcom.dpps.sensortype=3 \
+    ro.qualcomm.display.paneltype=1 \
+    ro.qualcomm.foss=1 \
+    config.foss.xml=1 \
+    config.foss.path="/system/etc/FOSSConfig.xml"
+
 # CNE
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.cne.feature=1
@@ -107,7 +111,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     sdm.perf_hint_window=50 \
     persist.hwc.enable_vds=1 \
     sdm.debug.disable_rotator_split=1 \
-    ro.persist.qcapb=1
+    ro.persist.qcapb = 1
 
 # OpenGLES
 PRODUCT_PROPERTY_OVERRIDES += \

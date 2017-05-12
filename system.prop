@@ -58,5 +58,12 @@ persist.loc.nlp_name=com.qualcomm.location
 # Screen Density
 ro.sf.lcd_density=560
 
+# IMS
+persist.dbg.volte_avail_ovr=1
+persist.dbg.vt_avail_ovr=1
+persist.radio.NO_STAPA=1
+persist.radio.VT_HYBRID_ENABLE=1
+net.lte.volte_call_capable=true
+
 # Maintainer
 ro.mk.maintainer=zhaochengw

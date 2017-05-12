@@ -185,7 +185,7 @@ void vendor_load_properties() {
     // Enable VoLTE
     property_set("persist.radio.cs_srv_type", "0");
     property_set("persist.radio.calls.on.ims", "true");
-    property_set("persist.radio.jbims", "true");
+    property_set("persist.radio.jbims", "1");
 
     init_alarm_boot_properties();
 }
